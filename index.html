@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Impacto IA en Desarrollo SAP – Antes vs Después</title>
+    <title>Impacto IA en Desarrollo SAP – Vue Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         :root {
             --bg: #0d1117;
@@ -21,13 +22,15 @@
             --orange: #f0883e;
             --red: #f85149;
             --purple: #bc8cff;
-            --hover-row: rgba(88, 166, 255, .05);
+            --hover-row: rgba(88, 166, 255, .1);
             --t-abap: #f0883e;
             --t-odata: #58a6ff;
             --t-cap: #bc8cff;
             --t-fiori: #3fb950;
             --t-mixed: #e3b341;
         }
+
+
 
         * {
             box-sizing: border-box;
@@ -41,6 +44,11 @@
             color: var(--txt);
             min-height: 100vh;
             padding: 2rem;
+            position: relative;
+        }
+
+        [v-cloak] {
+            display: none;
         }
 
         /* ── HEADER ── */
@@ -212,15 +220,6 @@
             color: #0d1117;
         }
 
-        .btn-danger {
-            border-color: var(--red);
-            color: var(--red);
-        }
-
-        .btn-danger:hover {
-            background: rgba(248, 81, 73, .1);
-        }
-
         .btn-success {
             border-color: var(--green);
             color: var(--green);
@@ -236,6 +235,7 @@
             border-radius: 12px;
             border: 1px solid var(--border);
             box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
+            background: var(--bg-card);
         }
 
         table {
@@ -269,7 +269,6 @@
             text-align: center;
         }
 
-        /* Group separator rows */
         .gr td {
             background: rgba(88, 166, 255, .06);
             color: var(--blue);
@@ -287,12 +286,6 @@
             cursor: text;
             min-width: 200px;
             display: inline-block;
-        }
-
-        .gr .gr-name:focus {
-            background: rgba(88, 166, 255, .15);
-            border-radius: 3px;
-            padding: 0 4px;
         }
 
         .gr .gr-actions {
@@ -313,7 +306,6 @@
             padding: .15rem .5rem;
             transition: all .15s;
             font-family: inherit;
-            white-space: nowrap;
         }
 
         .gr .gr-btn:hover {
@@ -326,17 +318,9 @@
             color: var(--red);
         }
 
-        .gr .gr-btn.del-gr:hover {
-            background: rgba(248, 81, 73, .2);
-        }
-
         tbody tr {
             border-bottom: 1px solid var(--border);
             transition: background .12s;
-        }
-
-        tbody tr:last-child {
-            border-bottom: none;
         }
 
         tbody tr:not(.gr):hover {
@@ -357,7 +341,6 @@
             font-size: .75rem;
         }
 
-        /* ── EDITABLE CELLS ── */
         td[contenteditable="true"] {
             outline: none;
             cursor: text;
@@ -373,7 +356,6 @@
             border-radius: 3px;
         }
 
-        /* ── TECH BADGE (clickable to cycle) ── */
         .tech {
             display: inline-block;
             padding: .15rem .5rem;
@@ -383,12 +365,7 @@
             letter-spacing: .03em;
             white-space: nowrap;
             cursor: pointer;
-            transition: opacity .15s;
             user-select: none;
-        }
-
-        .tech:hover {
-            opacity: .8;
         }
 
         .t-abap {
@@ -416,11 +393,6 @@
             color: var(--t-mixed);
         }
 
-        .td-tech {
-            cursor: default;
-        }
-
-        /* ── TIME CELLS ── */
         .time-before {
             color: var(--orange);
             font-weight: 600;
@@ -431,7 +403,6 @@
             font-weight: 600;
         }
 
-        /* ── PROGRESS BAR ── */
         .pbar-wrap {
             display: flex;
             align-items: center;
@@ -492,12 +463,6 @@
             color: var(--blue);
         }
 
-        /* ── ROW ACTION BUTTONS ── */
-        .td-act {
-            text-align: center;
-            white-space: nowrap;
-        }
-
         .row-del {
             background: none;
             border: 1px solid transparent;
@@ -506,7 +471,6 @@
             font-size: .85rem;
             cursor: pointer;
             padding: .2rem .4rem;
-            transition: all .15s;
             line-height: 1;
         }
 
@@ -516,7 +480,6 @@
             color: var(--red);
         }
 
-        /* ── ADD ROW BOTTOM ── */
         .add-row-bar {
             display: flex;
             justify-content: center;
@@ -535,177 +498,41 @@
             align-items: center;
         }
 
-        /* ── PRINT ── */
         @page {
             size: A4 landscape;
             margin: 1cm 1.2cm;
         }
 
         @media print {
-            * {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
             body {
                 background: #fff !important;
                 color: #000 !important;
                 padding: 0 !important;
-                font-size: 8pt;
             }
 
-            .actions {
-                display: none !important;
-            }
-
-            .edit-hint {
-                display: none !important;
-            }
-
-            .add-row-bar {
-                display: none !important;
-            }
-
+            .actions,
+            .add-row-bar,
             .td-act,
-            thead th.th-act {
+            .th-act,
+            .gr-actions,
+            #balatro-bg {
                 display: none !important;
-            }
-
-            .gr .gr-actions {
-                display: none !important;
-            }
-
-            .header h1 {
-                -webkit-text-fill-color: #000 !important;
-                background: none !important;
-                color: #000 !important;
-                font-size: 14pt;
-            }
-
-            .header .eyebrow,
-            .header p {
-                color: #555 !important;
-            }
-
-            .summary {
-                gap: .4rem;
-                margin-bottom: .8rem;
-            }
-
-            .sc {
-                background: #f4f6fa !important;
-                border: 1px solid #ccc !important;
-                padding: .5rem .7rem;
-            }
-
-            .sc .label {
-                color: #555 !important;
-            }
-
-            .val-green {
-                color: #1a7f37 !important;
-            }
-
-            .val-blue {
-                color: #0050b3 !important;
-            }
-
-            .val-yellow {
-                color: #7a5000 !important;
-            }
-
-            .val-purple {
-                color: #4a007a !important;
             }
 
             .table-wrap {
-                overflow: visible !important;
-                border-radius: 0 !important;
+                backdrop-filter: none !important;
+                background: #fff !important;
                 box-shadow: none !important;
-                border: 1px solid #bbb !important;
             }
 
             table {
-                min-width: unset !important;
                 width: 100% !important;
-                table-layout: fixed;
-                font-size: 7.5pt;
+                border: 1px solid #ccc;
             }
 
-            thead th {
-                background: #e4e9f0 !important;
-                color: #333 !important;
-                font-size: 6.5pt !important;
-                padding: 4px 5px !important;
-                position: static !important;
-                white-space: normal !important;
-                border: 1px solid #bbb !important;
-            }
-
+            th,
             td {
-                padding: 4px 5px !important;
-                color: #000 !important;
-                word-break: break-word;
-                border: 1px solid #ddd !important;
-            }
-
-            .gr td {
-                background: #dceeff !important;
-                color: #003366 !important;
-                border: 1px solid #aac4e4 !important;
-            }
-
-            .tech {
-                border-radius: 3px !important;
-            }
-
-            .t-abap {
-                background: #fde8d0 !important;
-                color: #8a3800 !important;
-            }
-
-            .t-odata {
-                background: #d0e8ff !important;
-                color: #003080 !important;
-            }
-
-            .t-cap {
-                background: #e8d4ff !important;
-                color: #4a007a !important;
-            }
-
-            .t-fiori {
-                background: #d4f0dc !important;
-                color: #1a5c2a !important;
-            }
-
-            .t-mixed {
-                background: #fef3cd !important;
-                color: #7a5000 !important;
-            }
-
-            .time-before {
-                color: #b35a00 !important;
-            }
-
-            .time-after {
-                color: #1a7f37 !important;
-            }
-
-            .pbar {
-                display: none;
-            }
-
-            .pbar-val {
-                font-size: 8pt !important;
-            }
-
-            .pbar-wrap {
-                gap: 0;
-            }
-
-            tbody tr:hover {
-                background: transparent !important;
+                border: 1px solid #eee;
             }
         }
     </style>
@@ -713,376 +540,142 @@
 
 <body>
 
-    <header class="header">
-        <div class="eyebrow">Medición de Impacto · Herramienta IA en SAP</div>
-        <h1>⚡ Desarrollo SAP — Antes vs Después de IA</h1>
-        <p>Comparativa de tiempos reales en ABAP, OData, CAP y Fiori con y sin asistencia de IA</p>
-    </header>
 
-    <!-- SUMMARY -->
-    <div class="summary">
-        <div class="sc">
-            <div class="label">Tareas medidas</div>
-            <div class="value val-blue" id="sc-tasks">—</div>
-            <div class="sub">Casos comparados</div>
+    <div id="app" v-cloak>
+        <header class="header">
+            <div class="eyebrow">Medición de Impacto · herramiente IA en SAP (Vue Version)</div>
+            <h1>⚡ Desarrollo SAP — Antes vs Después de IA</h1>
+            <p>Comparativa de tiempos reales con persistencia de datos local</p>
+        </header>
+
+        <!-- SUMMARY -->
+        <div class="summary">
+            <div class="sc">
+                <div class="label">Tareas medidas</div>
+                <div class="value val-blue">{{ metrics.count }}</div>
+                <div class="sub">Casos comparados</div>
+            </div>
+            <div class="sc">
+                <div class="label">Tiempo total SIN IA</div>
+                <div class="value val-yellow">{{ formatH(metrics.totalBefore) }}</div>
+                <div class="sub">Horas acumuladas</div>
+            </div>
+            <div class="sc">
+                <div class="label">Tiempo total CON IA</div>
+                <div class="value val-green">{{ formatH(metrics.totalAfter) }}</div>
+                <div class="sub">Horas acumuladas</div>
+            </div>
+            <div class="sc">
+                <div class="label">Ahorro total</div>
+                <div class="value val-green">{{ formatH(metrics.totalSaved) }}</div>
+                <div class="sub">Horas recuperadas</div>
+            </div>
+            <div class="sc">
+                <div class="label">Mejora promedio</div>
+                <div class="value val-purple">{{ metrics.avgPct }}%</div>
+                <div class="sub">Reducción de tiempo</div>
+            </div>
         </div>
-        <div class="sc">
-            <div class="label">Tiempo total SIN IA</div>
-            <div class="value val-yellow" id="sc-before">—</div>
-            <div class="sub">Horas acumuladas</div>
+
+        <div class="legend">
+            <div v-for="t in TECHS" :key="t.label" class="leg-item">
+                <span class="leg-dot" :style="{ background: 'var(--' + t.cls + ')' }"></span>{{ t.label }}
+            </div>
+            <div class="leg-item" style="font-style:italic; font-size:.68rem;">· Clic en el badge de tecnología para
+                cambiarla</div>
         </div>
-        <div class="sc">
-            <div class="label">Tiempo total CON IA</div>
-            <div class="value val-green" id="sc-after">—</div>
-            <div class="sub">Horas acumuladas</div>
+
+        <div class="actions">
+            <div class="edit-hint">✏️ Los cambios se guardan automáticamente en tu navegador</div>
+            <div class="btn-group">
+                <button class="btn btn-success" @click="addSection">＋ Agregar sección</button>
+                <button class="btn" @click="exportPDF">📄 Exportar PDF</button>
+                <button class="btn btn-primary" @click="exportCSV">⬇️ Descargar CSV</button>
+                <button class="btn btn-danger" @click="resetData" style="font-size: 0.7rem; opacity: 0.7;">🗑 Limpiar
+                    todo</button>
+            </div>
         </div>
-        <div class="sc">
-            <div class="label">Ahorro total</div>
-            <div class="value val-green" id="sc-saved">—</div>
-            <div class="sub">Horas recuperadas</div>
-        </div>
-        <div class="sc">
-            <div class="label">Mejora promedio</div>
-            <div class="value val-purple" id="sc-avg">—</div>
-            <div class="sub">Reducción de tiempo</div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="num">#</th>
+                        <th>Tarea de Desarrollo</th>
+                        <th>Tecnología</th>
+                        <th>Descripción / Alcance</th>
+                        <th>Tiempo SIN IA</th>
+                        <th>Tiempo CON IA</th>
+                        <th>Ahorro</th>
+                        <th>Mejora %</th>
+                        <th>Observaciones</th>
+                        <th class="th-act">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template v-for="(section, sIdx) in sections" :key="section.id">
+                        <tr class="gr">
+                            <td colspan="10">
+                                <span class="gr-name" contenteditable="true"
+                                    @blur="section.name = $event.target.innerText">{{ section.name }}</span>
+                                <div class="gr-actions">
+                                    <button class="gr-btn" @click="addRow(sIdx)">＋ Fila</button>
+                                    <button class="gr-btn del-gr" @click="removeSection(sIdx)">✕ Sección</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-for="(row, rIdx) in section.rows" :key="row.id">
+                            <td class="num" contenteditable="true" @blur="row.num = $event.target.innerText">{{ row.num
+                                }}</td>
+                            <td contenteditable="true" @blur="row.task = $event.target.innerText">{{ row.task }}</td>
+                            <td class="td-tech">
+                                <span :class="['tech', getTech(row.tech).cls]" @click="cycleTech(row)">{{ row.tech
+                                    }}</span>
+                            </td>
+                            <td contenteditable="true" @blur="row.scope = $event.target.innerText">{{ row.scope }}</td>
+                            <td class="time-before" contenteditable="true"
+                                @blur="updateTime(row, 'before', $event.target.innerText)">
+                                {{ formatH(row.before) }}
+                            </td>
+                            <td class="time-after" contenteditable="true"
+                                @blur="updateTime(row, 'after', $event.target.innerText)">
+                                {{ formatH(row.after) }}
+                            </td>
+                            <td :style="{ color: (row.before - row.after) > 0 ? 'var(--green)' : 'var(--red)' }">
+                                {{ formatH(Math.max(0, row.before - row.after)) }}
+                            </td>
+                            <td>
+                                <div :class="['pbar-wrap', getTier(calculatePct(row.before, row.after))]">
+                                    <div class="pbar">
+                                        <div class="pbar-fill"
+                                            :style="{ width: Math.max(0, Math.min(100, calculatePct(row.before, row.after))) + '%' }">
+                                        </div>
+                                    </div>
+                                    <span class="pbar-val">{{ calculatePct(row.before, row.after) }}%</span>
+                                </div>
+                            </td>
+                            <td contenteditable="true" @blur="row.obs = $event.target.innerText">{{ row.obs }}</td>
+                            <td class="td-act">
+                                <button class="row-del" @click="removeRow(sIdx, rIdx)">🗑</button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+
+            <div class="add-row-bar">
+                <span>Agregar fila en:</span>
+                <button v-for="(s, idx) in sections" :key="s.id" class="btn btn-success"
+                    style="font-size: .72rem; padding: .3rem .7rem;" @click="addRow(idx)">
+                    ＋ {{ s.name.replace(/^[^\w]+/, '').slice(0, 20) }}
+                </button>
+            </div>
         </div>
     </div>
-
-    <!-- LEGEND -->
-    <div class="legend">
-        <div class="leg-item"><span class="leg-dot" style="background:var(--t-abap)"></span>ABAP</div>
-        <div class="leg-item"><span class="leg-dot" style="background:var(--t-odata)"></span>OData</div>
-        <div class="leg-item"><span class="leg-dot" style="background:var(--t-cap)"></span>CAP</div>
-        <div class="leg-item"><span class="leg-dot" style="background:var(--t-fiori)"></span>Fiori</div>
-        <div class="leg-item"><span class="leg-dot" style="background:var(--t-mixed)"></span>Multi-stack</div>
-        <div class="leg-item" style="font-style:italic; font-size:.68rem;">· Clic en el badge de tecnología para
-            cambiarla</div>
-    </div>
-
-    <!-- ACTIONS BAR -->
-    <div class="actions">
-        <div class="edit-hint">✏️ Clic en cualquier celda para editar &nbsp;·&nbsp; Los totales se recalculan
-            automáticamente</div>
-        <div class="btn-group">
-            <button class="btn btn-success" onclick="addGroup()">＋ Agregar sección</button>
-            <button class="btn" onclick="exportPDF()">📄 Exportar PDF</button>
-            <button class="btn btn-primary" onclick="exportCSV()">⬇️ Descargar CSV</button>
-        </div>
-    </div>
-
-    <!-- TABLE -->
-    <div class="table-wrap">
-        <table id="mainTable">
-            <thead>
-                <tr>
-                    <th class="num">#</th>
-                    <th>Tarea de Desarrollo</th>
-                    <th>Tecnología</th>
-                    <th>Descripción / Alcance</th>
-                    <th>Tiempo SIN IA</th>
-                    <th>Tiempo CON IA</th>
-                    <th>Ahorro</th>
-                    <th>Mejora %</th>
-                    <th>Observaciones</th>
-                    <th class="th-act">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-
-                <!-- ══ ABAP ══ -->
-                <tr class="gr" data-group="1">
-                    <td colspan="10">
-                        <span class="gr-name" contenteditable="true">📦 ABAP — Reportes &amp; Lógica de Negocio</span>
-                        <span class="gr-actions">
-                            <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
-                            <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
-                        </span>
-                    </td>
-                </tr>
-                <tr data-group="1">
-                    <td class="num" contenteditable="true">1</td>
-                    <td contenteditable="true">Reporte ALV clásico (SELECT + LOOP)</td>
-                    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)"
-                            title="Clic para cambiar">ABAP</span></td>
-                    <td contenteditable="true">Reporte de ventas con filtros, totales y layout ALV</td>
-                    <td class="time-before" contenteditable="true">6 h</td>
-                    <td class="time-after" contenteditable="true">2 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó estructura base + SELECTs optimizados</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="1">
-                    <td class="num" contenteditable="true">2</td>
-                    <td contenteditable="true">Enhancement de función estándar (BAdI / User-exit)</td>
-                    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)"
-                            title="Clic para cambiar">ABAP</span></td>
-                    <td contenteditable="true">Localizar enhancement spot + implementar lógica custom</td>
-                    <td class="time-before" contenteditable="true">5 h</td>
-                    <td class="time-after" contenteditable="true">1.5 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA identificó el exit correcto y generó el código</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="1">
-                    <td class="num" contenteditable="true">3</td>
-                    <td contenteditable="true">BAPI Wrapper / Function Module custom</td>
-                    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)"
-                            title="Clic para cambiar">ABAP</span></td>
-                    <td contenteditable="true">Wrapper sobre BAPI estándar con validaciones</td>
-                    <td class="time-before" contenteditable="true">4 h</td>
-                    <td class="time-after" contenteditable="true">1 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó interface + manejo de RETURN completo</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="1">
-                    <td class="num" contenteditable="true">4</td>
-                    <td contenteditable="true">Debugging y corrección de performance</td>
-                    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)"
-                            title="Clic para cambiar">ABAP</span></td>
-                    <td contenteditable="true">Identificar SELECTs ineficientes + refactorizar</td>
-                    <td class="time-before" contenteditable="true">8 h</td>
-                    <td class="time-after" contenteditable="true">2 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA analizó trace y propuso refactorización</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="1">
-                    <td class="num" contenteditable="true">5</td>
-                    <td contenteditable="true">Smartform / Adobe Form</td>
-                    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)"
-                            title="Clic para cambiar">ABAP</span></td>
-                    <td contenteditable="true">Formulario de impresión con logo y tabla de posiciones</td>
-                    <td class="time-before" contenteditable="true">10 h</td>
-                    <td class="time-after" contenteditable="true">4 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó driver program y estructura de nodos</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-
-                <!-- ══ ODATA ══ -->
-                <tr class="gr" data-group="2">
-                    <td colspan="10">
-                        <span class="gr-name" contenteditable="true">🌐 OData — Servicios REST para SAP</span>
-                        <span class="gr-actions">
-                            <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
-                            <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
-                        </span>
-                    </td>
-                </tr>
-                <tr data-group="2">
-                    <td class="num" contenteditable="true">6</td>
-                    <td contenteditable="true">Servicio OData SEGW (GET_ENTITYSET)</td>
-                    <td class="td-tech"><span class="tech t-odata" onclick="cycleTech(this)"
-                            title="Clic para cambiar">OData</span></td>
-                    <td contenteditable="true">Entity set con filtros y paginación desde tabla custom</td>
-                    <td class="time-before" contenteditable="true">8 h</td>
-                    <td class="time-after" contenteditable="true">2.5 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó clase MPC, DPC y método completo</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="2">
-                    <td class="num" contenteditable="true">7</td>
-                    <td contenteditable="true">OData CREATE / UPDATE / DELETE</td>
-                    <td class="td-tech"><span class="tech t-odata" onclick="cycleTech(this)"
-                            title="Clic para cambiar">OData</span></td>
-                    <td contenteditable="true">CRUD completo sobre entidad con validaciones</td>
-                    <td class="time-before" contenteditable="true">10 h</td>
-                    <td class="time-after" contenteditable="true">3 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó los 3 métodos con manejo de errores</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="2">
-                    <td class="num" contenteditable="true">8</td>
-                    <td contenteditable="true">CDS View + OData automático (anotaciones)</td>
-                    <td class="td-tech"><span class="tech t-odata" onclick="cycleTech(this)"
-                            title="Clic para cambiar">OData</span></td>
-                    <td contenteditable="true">Vista CDS con @OData.publish y filtros por anotaciones</td>
-                    <td class="time-before" contenteditable="true">6 h</td>
-                    <td class="time-after" contenteditable="true">1.5 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó CDS + anotaciones @Search @Filter</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-
-                <!-- ══ CAP ══ -->
-                <tr class="gr" data-group="3">
-                    <td colspan="10">
-                        <span class="gr-name" contenteditable="true">☁️ CAP — Cloud Application Programming Model</span>
-                        <span class="gr-actions">
-                            <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
-                            <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
-                        </span>
-                    </td>
-                </tr>
-                <tr data-group="3">
-                    <td class="num" contenteditable="true">9</td>
-                    <td contenteditable="true">Modelo CDS + Service CAP básico</td>
-                    <td class="td-tech"><span class="tech t-cap" onclick="cycleTech(this)"
-                            title="Clic para cambiar">CAP</span></td>
-                    <td contenteditable="true">Entidades, asociaciones y servicio expuesto via OData</td>
-                    <td class="time-before" contenteditable="true">8 h</td>
-                    <td class="time-after" contenteditable="true">2 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó schema.cds + srv completo + handlers</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="3">
-                    <td class="num" contenteditable="true">10</td>
-                    <td contenteditable="true">CAP con handlers custom (JavaScript)</td>
-                    <td class="td-tech"><span class="tech t-cap" onclick="cycleTech(this)"
-                            title="Clic para cambiar">CAP</span></td>
-                    <td contenteditable="true">Lógica before/after, validaciones y cálculos derivados</td>
-                    <td class="time-before" contenteditable="true">10 h</td>
-                    <td class="time-after" contenteditable="true">3 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó handlers con async/await y mensajes</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="3">
-                    <td class="num" contenteditable="true">11</td>
-                    <td contenteditable="true">CAP + integración S/4 HANA (Remote Service)</td>
-                    <td class="td-tech"><span class="tech t-cap" onclick="cycleTech(this)"
-                            title="Clic para cambiar">CAP</span></td>
-                    <td contenteditable="true">Consumo de API estándar SAP desde CAP con destinations</td>
-                    <td class="time-before" contenteditable="true">14 h</td>
-                    <td class="time-after" contenteditable="true">5 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó external service + config destination</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-
-                <!-- ══ FIORI ══ -->
-                <tr class="gr" data-group="4">
-                    <td colspan="10">
-                        <span class="gr-name" contenteditable="true">🖥️ Fiori — Apps &amp; UI5</span>
-                        <span class="gr-actions">
-                            <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
-                            <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
-                        </span>
-                    </td>
-                </tr>
-                <tr data-group="4">
-                    <td class="num" contenteditable="true">12</td>
-                    <td contenteditable="true">Fiori Elements – List Report</td>
-                    <td class="td-tech"><span class="tech t-fiori" onclick="cycleTech(this)"
-                            title="Clic para cambiar">Fiori</span></td>
-                    <td contenteditable="true">App ListReport con filtros, columnas y navegación</td>
-                    <td class="time-before" contenteditable="true">8 h</td>
-                    <td class="time-after" contenteditable="true">2 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó @UI.lineItem + @SelectionField</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="4">
-                    <td class="num" contenteditable="true">13</td>
-                    <td contenteditable="true">Fiori Elements – Object Page</td>
-                    <td class="td-tech"><span class="tech t-fiori" onclick="cycleTech(this)"
-                            title="Clic para cambiar">Fiori</span></td>
-                    <td contenteditable="true">Detalle con secciones, subsecciones y tabs</td>
-                    <td class="time-before" contenteditable="true">10 h</td>
-                    <td class="time-after" contenteditable="true">3 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó @UI.facets + FieldGroup completos</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="4">
-                    <td class="num" contenteditable="true">14</td>
-                    <td contenteditable="true">SAPUI5 Custom App (freestyle)</td>
-                    <td class="td-tech"><span class="tech t-fiori" onclick="cycleTech(this)"
-                            title="Clic para cambiar">Fiori</span></td>
-                    <td contenteditable="true">App custom con OData binding, routing y fragmentos</td>
-                    <td class="time-before" contenteditable="true">20 h</td>
-                    <td class="time-after" contenteditable="true">8 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó controller, views XML y bindings</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-
-                <!-- ══ MULTI-STACK ══ -->
-                <tr class="gr" data-group="5">
-                    <td colspan="10">
-                        <span class="gr-name" contenteditable="true">🔗 Multi-stack — Soluciones Integradas</span>
-                        <span class="gr-actions">
-                            <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
-                            <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
-                        </span>
-                    </td>
-                </tr>
-                <tr data-group="5">
-                    <td class="num" contenteditable="true">15</td>
-                    <td contenteditable="true">CDS + OData + Fiori ListReport end-to-end</td>
-                    <td class="td-tech"><span class="tech t-mixed" onclick="cycleTech(this)"
-                            title="Clic para cambiar">Multi</span></td>
-                    <td contenteditable="true">Stack completo: CDS → servicio → app Fiori Elements</td>
-                    <td class="time-before" contenteditable="true">20 h</td>
-                    <td class="time-after" contenteditable="true">6 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA generó todo el stack con consistencia</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-                <tr data-group="5">
-                    <td class="num" contenteditable="true">16</td>
-                    <td contenteditable="true">ABAP + OData + Fiori (modernización ALV)</td>
-                    <td class="td-tech"><span class="tech t-mixed" onclick="cycleTech(this)"
-                            title="Clic para cambiar">Multi</span></td>
-                    <td contenteditable="true">Migrar ALV a Fiori Elements manteniendo lógica ABAP</td>
-                    <td class="time-before" contenteditable="true">25 h</td>
-                    <td class="time-after" contenteditable="true">9 h</td>
-                    <td class="td-saved"></td>
-                    <td class="td-pct"></td>
-                    <td contenteditable="true">IA guió migración y generó anotaciones</td>
-                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
-                            title="Eliminar fila">🗑</button></td>
-                </tr>
-
-            </tbody>
-        </table>
-
-        <!-- ADD ROW BAR (bottom of table) -->
-        <div class="add-row-bar">
-            <span>Agregar fila en:</span>
-            <!-- dynamically filled by JS -->
-            <div id="addRowButtons" style="display:flex;gap:.6rem;flex-wrap:wrap;"></div>
-        </div>
-    </div><!-- end table-wrap -->
 
     <script>
-        /* ════════════════════════════════════════
-           TECH BADGE CYCLE
-        ════════════════════════════════════════ */
+        const { createApp, ref, computed, watch, onMounted } = Vue;
+
         const TECHS = [
             { cls: 't-abap', label: 'ABAP' },
             { cls: 't-odata', label: 'OData' },
@@ -1091,258 +684,193 @@
             { cls: 't-mixed', label: 'Multi' }
         ];
 
-        function cycleTech(el) {
-            const cur = TECHS.findIndex(t => el.classList.contains(t.cls));
-            const next = (cur + 1) % TECHS.length;
-            TECHS.forEach(t => el.classList.remove(t.cls));
-            el.classList.add(TECHS[next].cls);
-            el.textContent = TECHS[next].label;
-        }
-
-        /* ════════════════════════════════════════
-           RECALCULATE
-        ════════════════════════════════════════ */
-        function parseH(text) {
-            const t = (text || '').trim().toLowerCase();
-            const min = t.match(/(\d+(?:[.,]\d+)?)\s*min/);
-            if (min) return parseFloat(min[1].replace(',', '.')) / 60;
-            const h = t.match(/(\d+(?:[.,]\d+)?)/);
-            return h ? parseFloat(h[1].replace(',', '.')) : NaN;
-        }
-
-        function fmt(h) {
-            if (isNaN(h) || h < 0) return '—';
-            if (h < 1) return Math.round(h * 60) + ' min';
-            const int = Math.floor(h), dec = h - int;
-            return int + (dec > 0.05 ? '.' + Math.round(dec * 10) : '') + ' h';
-        }
-
-        function recalc() {
-            const rows = document.querySelectorAll('#mainTable tbody tr:not(.gr)');
-            let totB = 0, totA = 0, pcts = [], count = 0;
-
-            rows.forEach(tr => {
-                const bEl = tr.querySelector('.time-before');
-                const aEl = tr.querySelector('.time-after');
-                const sEl = tr.querySelector('.td-saved');
-                const pEl = tr.querySelector('.td-pct');
-                if (!bEl || !aEl || !sEl || !pEl) return;
-
-                const b = parseH(bEl.innerText);
-                const a = parseH(aEl.innerText);
-
-                if (!isNaN(b) && !isNaN(a) && b > 0) {
-                    const saved = b - a;
-                    const pct = Math.round((saved / b) * 100);
-                    sEl.innerText = fmt(saved >= 0 ? saved : 0);
-                    sEl.style.color = saved > 0 ? 'var(--green)' : 'var(--red)';
-                    const tier = pct >= 70 ? 'tier-xhigh' : pct >= 50 ? 'tier-high' : pct >= 30 ? 'tier-mid' : 'tier-low';
-                    pEl.innerHTML = `<div class="pbar-wrap ${tier}"><div class="pbar"><div class="pbar-fill" style="width:${Math.max(0, Math.min(100, pct))}%"></div></div><span class="pbar-val">${pct}%</span></div>`;
-                    totB += b; totA += a; pcts.push(pct); count++;
-                }
-            });
-
-            document.getElementById('sc-tasks').innerText = count;
-            document.getElementById('sc-before').innerText = fmt(totB);
-            document.getElementById('sc-after').innerText = fmt(totA);
-            document.getElementById('sc-saved').innerText = fmt(totB - totA);
-            const avg = pcts.length ? Math.round(pcts.reduce((s, v) => s + v, 0) / pcts.length) : 0;
-            document.getElementById('sc-avg').innerText = avg + '%';
-
-            // Rebuild add-row buttons
-            refreshAddRowButtons();
-        }
-
-        /* ════════════════════════════════════════
-           ADD / DELETE ROW
-        ════════════════════════════════════════ */
-        let groupCounter = 6; // next group id
-
-        function makeDataRow(groupId) {
-            const tr = document.createElement('tr');
-            tr.dataset.group = groupId;
-            tr.innerHTML = `
-    <td class="num" contenteditable="true">—</td>
-    <td contenteditable="true">Nueva tarea</td>
-    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)" title="Clic para cambiar">ABAP</span></td>
-    <td contenteditable="true">Descripción de la tarea</td>
-    <td class="time-before" contenteditable="true">— h</td>
-    <td class="time-after"  contenteditable="true">— h</td>
-    <td class="td-saved"></td>
-    <td class="td-pct"></td>
-    <td contenteditable="true">—</td>
-    <td class="td-act"><button class="row-del" onclick="deleteRow(this)" title="Eliminar fila">🗑</button></td>`;
-
-            // Listen for time changes
-            tr.querySelectorAll('.time-before, .time-after').forEach(td => {
-                td.addEventListener('input', recalc);
-                td.addEventListener('blur', recalc);
-            });
-            return tr;
-        }
-
-        function addRowToGroup(btn) {
-            const grRow = btn.closest('tr.gr');
-            const gid = grRow.dataset.group;
-            const tbody = document.getElementById('tableBody');
-            const allRows = [...tbody.querySelectorAll('tr')];
-            const grIdx = allRows.indexOf(grRow);
-
-            // Find last row of this group
-            let insertAfter = grRow;
-            for (let i = grIdx + 1; i < allRows.length; i++) {
-                if (allRows[i].classList.contains('gr')) break;
-                insertAfter = allRows[i];
+        const DEFAULT_DATA = [
+            {
+                id: 1, name: '📦 ABAP — Reportes & Lógica de Negocio',
+                rows: [
+                    { id: 101, num: '1', task: 'Reporte ALV clásico (SELECT + LOOP)', tech: 'ABAP', scope: 'Reporte de ventas con filtros, totales y layout ALV', before: 6, after: 2, obs: 'IA generó estructura base + SELECTs optimizados' },
+                    { id: 102, num: '2', task: 'Enhancement de función estándar', tech: 'ABAP', scope: 'Localizar enhancement spot + implementar lógica custom', before: 5, after: 1.5, obs: 'IA identificó el exit correcto y generó el código' },
+                    { id: 103, num: '3', task: 'BAPI Wrapper / Function Module custom', tech: 'ABAP', scope: 'Wrapper sobre BAPI estándar con validaciones', before: 4, after: 1, obs: 'IA generó interface + manejo de RETURN completo' },
+                    { id: 104, num: '4', task: 'Debugging y performance', tech: 'ABAP', scope: 'Identificar SELECTs ineficientes + refactorizar', before: 8, after: 2, obs: 'IA analizó trace y propuso refactorización' },
+                    { id: 105, num: '5', task: 'Smartform / Adobe Form', tech: 'ABAP', scope: 'Formulario de impresión con logo y tabla', before: 10, after: 4, obs: 'IA generó driver program y estructura' }
+                ]
+            },
+            {
+                id: 2, name: '🌐 OData — Servicios REST para SAP',
+                rows: [
+                    { id: 201, num: '6', task: 'Servicio OData SEGW (GET_ENTITYSET)', tech: 'OData', scope: 'Entity set con filtros y paginación desde tabla custom', before: 8, after: 2.5, obs: 'IA generó clase MPC, DPC y método completo' },
+                    { id: 202, num: '7', task: 'OData CREATE / UPDATE / DELETE', tech: 'OData', scope: 'CRUD completo sobre entidad con validaciones', before: 10, after: 3, obs: 'IA generó los 3 métodos con manejo de errores' },
+                    { id: 203, num: '8', task: 'CDS View + OData automático', tech: 'OData', scope: 'Vista CDS con @OData.publish y filtros', before: 6, after: 1.5, obs: 'IA generó CDS + anotaciones @Search' }
+                ]
+            },
+            {
+                id: 3, name: '☁️ CAP — Cloud Application Programming',
+                rows: [
+                    { id: 301, num: '9', task: 'Modelo CDS + Service CAP básico', tech: 'CAP', scope: 'Entidades, asociaciones y servicio expuesto', before: 8, after: 2, obs: 'IA generó schema.cds + srv completo' },
+                    { id: 302, num: '10', task: 'CAP con handlers custom (JS)', tech: 'CAP', scope: 'Lógica before/after, validaciones y cálculos', before: 10, after: 3, obs: 'IA generó handlers con async/await' },
+                    { id: 303, num: '11', task: 'CAP + integración S/4 HANA', tech: 'CAP', scope: 'Consumo de API estándar SAP con destinations', before: 14, after: 5, obs: 'IA generó external service + config' }
+                ]
+            },
+            {
+                id: 4, name: '🖥️ Fiori — Apps & UI5',
+                rows: [
+                    { id: 401, num: '12', task: 'Fiori Elements – List Report', tech: 'Fiori', scope: 'App ListReport con filtros y navegación', before: 8, after: 2, obs: 'IA generó @UI.lineItem + @SelectionField' },
+                    { id: 402, num: '13', task: 'Fiori Elements – Object Page', tech: 'Fiori', scope: 'Detalle con secciones, subsecciones y tabs', before: 10, after: 3, obs: 'IA generó @UI.facets + FieldGroup' },
+                    { id: 403, num: '14', task: 'SAPUI5 Custom App (freestyle)', tech: 'Fiori', scope: 'App custom con OData binding y routing', before: 20, after: 8, obs: 'IA generó controller, views XML y bindings' }
+                ]
             }
+        ];
 
-            const newRow = makeDataRow(gid);
-            insertAfter.after(newRow);
-            // Focus the task name cell
-            newRow.querySelector('td:nth-child(2)').focus();
-            recalc();
-        }
+        createApp({
+            setup() {
+                const sections = ref([]);
+                const STORAGE_KEY = 'sap_ia_impact_v1';
 
-        function deleteRow(btn) {
-            const tr = btn.closest('tr');
-            tr.style.transition = 'opacity .2s';
-            tr.style.opacity = '0';
-            setTimeout(() => { tr.remove(); recalc(); }, 200);
-        }
-
-        function deleteGroup(btn) {
-            const grRow = btn.closest('tr.gr');
-            const gid = grRow.dataset.group;
-            const tbody = document.getElementById('tableBody');
-            const toDelete = [...tbody.querySelectorAll(`tr[data-group="${gid}"]`)];
-            toDelete.forEach(tr => {
-                tr.style.transition = 'opacity .2s';
-                tr.style.opacity = '0';
-            });
-            setTimeout(() => { toDelete.forEach(tr => tr.remove()); recalc(); }, 200);
-        }
-
-        function addGroup() {
-            const name = prompt('Nombre de la nueva sección:', '🆕 Nueva Sección');
-            if (!name) return;
-            const gid = groupCounter++;
-            const tbody = document.getElementById('tableBody');
-
-            // Group header
-            const grRow = document.createElement('tr');
-            grRow.className = 'gr';
-            grRow.dataset.group = gid;
-            grRow.innerHTML = `
-    <td colspan="10">
-      <span class="gr-name" contenteditable="true">${name}</span>
-      <span class="gr-actions">
-        <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
-        <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
-      </span>
-    </td>`;
-            tbody.appendChild(grRow);
-
-            // First data row
-            const dataRow = makeDataRow(gid);
-            tbody.appendChild(dataRow);
-            dataRow.querySelector('td:nth-child(2)').focus();
-            recalc();
-        }
-
-        /* ════════════════════════════════════════
-           ADD-ROW BUTTONS BAR (bottom)
-        ════════════════════════════════════════ */
-        function refreshAddRowButtons() {
-            const container = document.getElementById('addRowButtons');
-            container.innerHTML = '';
-
-            const groups = document.querySelectorAll('#tableBody tr.gr');
-            groups.forEach(gr => {
-                const nameEl = gr.querySelector('.gr-name');
-                const label = (nameEl ? nameEl.innerText : 'Sección').replace(/^[^\w]+/, '').slice(0, 30);
-                const btn = document.createElement('button');
-                btn.className = 'btn btn-success';
-                btn.style.fontSize = '.72rem';
-                btn.style.padding = '.3rem .7rem';
-                btn.textContent = '＋ ' + label;
-                btn.onclick = () => addRowToGroup(gr.querySelector('.gr-btn'));
-                container.appendChild(btn);
-            });
-        }
-
-        /* ════════════════════════════════════════
-           LISTEN ON TIME CELLS (initial rows)
-        ════════════════════════════════════════ */
-        document.querySelectorAll('.time-before, .time-after').forEach(td => {
-            td.addEventListener('input', recalc);
-            td.addEventListener('blur', recalc);
-        });
-
-        recalc();
-
-        /* ════════════════════════════════════════
-           EXPORT PDF
-        ════════════════════════════════════════ */
-        function exportPDF() {
-            const prev = document.title;
-            document.title = 'Impacto_IA_SAP_Antes_vs_Despues';
-            window.print();
-            setTimeout(() => { document.title = prev; }, 2000);
-        }
-
-        /* ════════════════════════════════════════
-           EXPORT CSV
-        ════════════════════════════════════════ */
-        function exportCSV() {
-            const tbl = document.getElementById('mainTable');
-
-            // Headers — skip "Acciones" column, prepend "Sección"
-            const headers = [
-                'Sección',
-                ...[...tbl.querySelectorAll('thead th')]
-                    .filter(th => !th.classList.contains('th-act'))
-                    .map(th => th.innerText.trim())
-            ];
-
-            const dataRows = [];
-
-            tbl.querySelectorAll('tbody tr:not(.gr)').forEach(tr => {
-                // Walk backwards to find the group header name
-                let section = '';
-                let prev = tr.previousElementSibling;
-                while (prev) {
-                    if (prev.classList.contains('gr')) {
-                        const nameEl = prev.querySelector('.gr-name');
-                        section = nameEl ? nameEl.innerText.trim() : '';
-                        break;
+                const loadData = () => {
+                    const saved = localStorage.getItem(STORAGE_KEY);
+                    if (saved) {
+                        try {
+                            sections.value = JSON.parse(saved);
+                        } catch (e) {
+                            sections.value = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                        }
+                    } else {
+                        sections.value = JSON.parse(JSON.stringify(DEFAULT_DATA));
                     }
-                    prev = prev.previousElementSibling;
-                }
+                };
 
-                const cells = [
-                    section,
-                    ...[...tr.querySelectorAll('td')]
-                        .filter(td => !td.classList.contains('td-act'))
-                        .map(td => td.innerText.trim())
-                ];
-                dataRows.push(cells);
-            });
+                onMounted(() => {
+                    loadData();
+                });
 
-            const esc = v => `"${String(v).replace(/"/g, '""')}"`;
-            const csv = [headers, ...dataRows].map(r => r.map(esc).join(',')).join('\n');
-            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
+                watch(sections, (newVal) => {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal));
+                }, { deep: true });
 
-            // Append to DOM before click — required for Chrome/Edge on Windows
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Impacto_IA_SAP.csv';
-            a.style.display = 'none';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(url), 500);
-        }
+                const metrics = computed(() => {
+                    let totalBefore = 0, totalAfter = 0, pcts = [], count = 0;
+                    sections.value.forEach(s => {
+                        s.rows.forEach(r => {
+                            if (r.before > 0) {
+                                totalBefore += r.before;
+                                totalAfter += r.after;
+                                pcts.push(((r.before - r.after) / r.before) * 100);
+                                count++;
+                            }
+                        });
+                    });
+                    const totalSaved = totalBefore - totalAfter;
+                    const avgPct = pcts.length ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : 0;
+                    return { count, totalBefore, totalAfter, totalSaved, avgPct };
+                });
+
+                const parseH = (text) => {
+                    const t = (text || '').toString().trim().toLowerCase();
+                    const minMatch = t.match(/(\d+(?:[.,]\d+)?)\s*min/);
+                    if (minMatch) return parseFloat(minMatch[1].replace(',', '.')) / 60;
+                    const hMatch = t.match(/(\d+(?:[.,]\d+)?)/);
+                    return hMatch ? parseFloat(hMatch[1].replace(',', '.')) : 0;
+                };
+
+                const formatH = (h) => {
+                    if (h === 0 || isNaN(h)) return '—';
+                    if (h < 1) return Math.round(h * 60) + ' min';
+                    const int = Math.floor(h), dec = h - int;
+                    return int + (dec > 0.05 ? '.' + Math.round(dec * 10) : '') + ' h';
+                };
+
+                const updateTime = (row, field, val) => {
+                    row[field] = parseH(val);
+                };
+
+                const calculatePct = (b, a) => {
+                    if (!b || b <= 0) return 0;
+                    return Math.round(((b - a) / b) * 100);
+                };
+
+                const getTier = (pct) => {
+                    if (pct >= 70) return 'tier-xhigh';
+                    if (pct >= 50) return 'tier-high';
+                    if (pct >= 30) return 'tier-mid';
+                    return 'tier-low';
+                };
+
+                const getTech = (label) => TECHS.find(t => t.label === label) || TECHS[0];
+
+                const cycleTech = (row) => {
+                    const idx = TECHS.findIndex(t => t.label === row.tech);
+                    row.tech = TECHS[(idx + 1) % TECHS.length].label;
+                };
+
+                const addRow = (sIdx) => {
+                    sections.value[sIdx].rows.push({
+                        id: Date.now(),
+                        num: sections.value[sIdx].rows.length + 1,
+                        task: 'Nueva tarea',
+                        tech: 'ABAP',
+                        scope: 'Descripción...',
+                        before: 0,
+                        after: 0,
+                        obs: '—'
+                    });
+                };
+
+                const removeRow = (sIdx, rIdx) => {
+                    sections.value[sIdx].rows.splice(rIdx, 1);
+                };
+
+                const addSection = () => {
+                    const name = prompt('Nombre de la sección:', 'Nueva Sección');
+                    if (name) {
+                        sections.value.push({ id: Date.now(), name, rows: [] });
+                        addRow(sections.value.length - 1);
+                    }
+                };
+
+                const removeSection = (sIdx) => {
+                    if (confirm('¿Eliminar toda la sección?')) {
+                        sections.value.splice(sIdx, 1);
+                    }
+                };
+
+                const resetData = () => {
+                    if (confirm('¿Seguro que quieres borrar todos los datos locales?')) {
+                        sections.value = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                    }
+                };
+
+                const exportPDF = () => window.print();
+
+                const exportCSV = () => {
+                    const headers = ['Sección', '#', 'Tarea', 'Tecnología', 'Alcance', 'SIN IA (h)', 'CON IA (h)', 'Ahorro (h)', 'Mejora %', 'Observaciones'];
+                    const rows = [];
+                    sections.value.forEach(s => {
+                        s.rows.forEach(r => {
+                            rows.push([
+                                s.name, r.num, r.task, r.tech, r.scope, r.before, r.after,
+                                Math.max(0, r.before - r.after), calculatePct(r.before, r.after), r.obs
+                            ]);
+                        });
+                    });
+                    const csv = [headers, ...rows].map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+                    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Impacto_IA_SAP_Vue.csv';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                };
+
+                return {
+                    sections, metrics, TECHS, formatH, updateTime, calculatePct, getTier, getTech, cycleTech,
+                    addRow, removeRow, addSection, removeSection, resetData, exportPDF, exportCSV
+                };
+            }
+        }).mount('#app');
     </script>
+
+
 </body>
 
 </html>

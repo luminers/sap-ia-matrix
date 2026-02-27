@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Impacto IA en Desarrollo SAP – Antes vs Después</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #060010;
+            --bg-card: rgba(22, 27, 34, 0.6);
+            --bg-head: rgba(28, 35, 51, 0.8);
+            --border: rgba(48, 54, 61, 0.5);
+            --txt: #e6edf3;
+            --muted: #8b949e;
+            --blue: #58a6ff;
+            --green: #3fb950;
+            --yellow: #e3b341;
+            --orange: #f0883e;
+            --red: #f85149;
+            --purple: #bc8cff;
+            --hover-row: rgba(88, 166, 255, .1);
+            --t-abap: #f0883e;
+            --t-odata: #58a6ff;
+            --t-cap: #bc8cff;
+            --t-fiori: #3fb950;
+            --t-mixed: #e3b341;
+        }
+
+        #balatro-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .balatro-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header .eyebrow {
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--blue);
+            margin-bottom: .45rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #e6edf3 25%, #58a6ff 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: .35rem;
+        }
+
+        .header p {
+            color: var(--muted);
+            font-size: .875rem;
+        }
+
+        /* ── SUMMARY CARDS ── */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+            gap: .85rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .sc {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            transition: border-color .2s;
+        }
+
+        .sc:hover {
+            border-color: var(--blue);
+        }
+
+        .sc .label {
+            font-size: .68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--muted);
+            margin-bottom: .3rem;
+        }
+
+        .sc .value {
+            font-size: 1.55rem;
+            font-weight: 800;
+        }
+
+        .sc .sub {
+            font-size: .7rem;
+            color: var(--muted);
+            margin-top: .15rem;
+        }
+
+        .val-green {
+            color: var(--green);
+        }
+
+        .val-blue {
+            color: var(--blue);
+        }
+
+        .val-yellow {
+            color: var(--yellow);
+        }
+
+        .val-purple {
+            color: var(--purple);
+        }
+
+        /* ── LEGEND ── */
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 1.4rem;
+        }
+
+        .leg-item {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            font-size: .75rem;
+            color: var(--muted);
+            cursor: default;
+        }
+
+        .leg-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        /* ── ACTIONS BAR ── */
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: .9rem;
+            gap: .75rem;
+            flex-wrap: wrap;
+        }
+
+        .edit-hint {
+            font-size: .7rem;
+            color: var(--muted);
+            background: rgba(88, 166, 255, .06);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: .25rem .7rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: .6rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .42rem 1rem;
+            border-radius: 6px;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--txt);
+            transition: all .18s;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: var(--bg-head);
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: #0d1117;
+            border-color: var(--blue);
+        }
+
+        .btn-primary:hover {
+            background: #79b8ff;
+            border-color: #79b8ff;
+            color: #0d1117;
+        }
+
+        .btn-danger {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .btn-danger:hover {
+            background: rgba(248, 81, 73, .1);
+        }
+
+        .btn-success {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .btn-success:hover {
+            background: rgba(63, 185, 80, .1);
+        }
+
+        /* ── TABLE ── */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
+            backdrop-filter: blur(10px);
+            background: rgba(13, 17, 23, 0.4);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1100px;
+        }
+
+        thead th {
+            background: var(--bg-head);
+            color: var(--muted);
+            font-size: .67rem;
+            font-weight: 700;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            padding: .85rem .9rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        thead th.num {
+            text-align: center;
+        }
+
+        thead th.th-act {
+            width: 80px;
+            text-align: center;
+        }
+
+        /* Group separator rows */
+        .gr td {
+            background: rgba(88, 166, 255, .06);
+            color: var(--blue);
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: .45rem 1rem;
+            border-top: 1px solid rgba(88, 166, 255, .18);
+            border-bottom: 1px solid rgba(88, 166, 255, .18);
+        }
+
+        .gr .gr-name {
+            outline: none;
+            cursor: text;
+            min-width: 200px;
+            display: inline-block;
+        }
+
+        .gr .gr-name:focus {
+            background: rgba(88, 166, 255, .15);
+            border-radius: 3px;
+            padding: 0 4px;
+        }
+
+        .gr .gr-actions {
+            float: right;
+            display: flex;
+            gap: .4rem;
+            padding-right: .5rem;
+        }
+
+        .gr .gr-btn {
+            background: rgba(88, 166, 255, .12);
+            border: 1px solid rgba(88, 166, 255, .25);
+            border-radius: 5px;
+            color: var(--blue);
+            font-size: .65rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: .15rem .5rem;
+            transition: all .15s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .gr .gr-btn:hover {
+            background: rgba(88, 166, 255, .25);
+        }
+
+        .gr .gr-btn.del-gr {
+            background: rgba(248, 81, 73, .1);
+            border-color: rgba(248, 81, 73, .25);
+            color: var(--red);
+        }
+
+        .gr .gr-btn.del-gr:hover {
+            background: rgba(248, 81, 73, .2);
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background .12s;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:not(.gr):hover {
+            background: var(--hover-row);
+        }
+
+        td {
+            padding: .78rem .9rem;
+            font-size: .8rem;
+            line-height: 1.45;
+            color: var(--txt);
+            vertical-align: middle;
+        }
+
+        td.num {
+            text-align: center;
+            color: var(--muted);
+            font-size: .75rem;
+        }
+
+        /* ── EDITABLE CELLS ── */
+        td[contenteditable="true"] {
+            outline: none;
+            cursor: text;
+        }
+
+        td[contenteditable="true"]:hover {
+            background: rgba(88, 166, 255, .07);
+        }
+
+        td[contenteditable="true"]:focus {
+            background: rgba(88, 166, 255, .12);
+            box-shadow: inset 0 0 0 2px rgba(88, 166, 255, .45);
+            border-radius: 3px;
+        }
+
+        /* ── TECH BADGE (clickable to cycle) ── */
+        .tech {
+            display: inline-block;
+            padding: .15rem .5rem;
+            border-radius: 20px;
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: opacity .15s;
+            user-select: none;
+        }
+
+        .tech:hover {
+            opacity: .8;
+        }
+
+        .t-abap {
+            background: rgba(240, 136, 62, .15);
+            color: var(--t-abap);
+        }
+
+        .t-odata {
+            background: rgba(88, 166, 255, .15);
+            color: var(--t-odata);
+        }
+
+        .t-cap {
+            background: rgba(188, 140, 255, .15);
+            color: var(--t-cap);
+        }
+
+        .t-fiori {
+            background: rgba(63, 185, 80, .15);
+            color: var(--t-fiori);
+        }
+
+        .t-mixed {
+            background: rgba(227, 179, 65, .15);
+            color: var(--t-mixed);
+        }
+
+        .td-tech {
+            cursor: default;
+        }
+
+        /* ── TIME CELLS ── */
+        .time-before {
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        .time-after {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        /* ── PROGRESS BAR ── */
+        .pbar-wrap {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            min-width: 110px;
+        }
+
+        .pbar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, .07);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .pbar-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width .4s ease;
+        }
+
+        .pbar-val {
+            font-size: .76rem;
+            font-weight: 700;
+            min-width: 36px;
+            text-align: right;
+        }
+
+        .tier-low .pbar-fill {
+            background: var(--yellow);
+        }
+
+        .tier-low .pbar-val {
+            color: var(--yellow);
+        }
+
+        .tier-mid .pbar-fill {
+            background: var(--orange);
+        }
+
+        .tier-mid .pbar-val {
+            color: var(--orange);
+        }
+
+        .tier-high .pbar-fill {
+            background: var(--green);
+        }
+
+        .tier-high .pbar-val {
+            color: var(--green);
+        }
+
+        .tier-xhigh .pbar-fill {
+            background: var(--blue);
+        }
+
+        .tier-xhigh .pbar-val {
+            color: var(--blue);
+        }
+
+        /* ── ROW ACTION BUTTONS ── */
+        .td-act {
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .row-del {
+            background: none;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            color: var(--muted);
+            font-size: .85rem;
+            cursor: pointer;
+            padding: .2rem .4rem;
+            transition: all .15s;
+            line-height: 1;
+        }
+
+        .row-del:hover {
+            background: rgba(248, 81, 73, .12);
+            border-color: rgba(248, 81, 73, .3);
+            color: var(--red);
+        }
+
+        /* ── ADD ROW BOTTOM ── */
+        .add-row-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-top: 1px dashed var(--border);
+            border-radius: 0 0 12px 12px;
+            flex-wrap: wrap;
+        }
+
+        .add-row-bar span {
+            font-size: .75rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+        }
+
+        /* ── PRINT ── */
+        @page {
+            size: A4 landscape;
+            margin: 1cm 1.2cm;
+        }
+
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            body {
+                background: #fff !important;
+                color: #000 !important;
+                padding: 0 !important;
+                font-size: 8pt;
+            }
+
+            .actions {
+                display: none !important;
+            }
+
+            .edit-hint {
+                display: none !important;
+            }
+
+            .add-row-bar {
+                display: none !important;
+            }
+
+            .td-act,
+            thead th.th-act {
+                display: none !important;
+            }
+
+            .gr .gr-actions {
+                display: none !important;
+            }
+
+            .header h1 {
+                -webkit-text-fill-color: #000 !important;
+                background: none !important;
+                color: #000 !important;
+                font-size: 14pt;
+            }
+
+            .header .eyebrow,
+            .header p {
+                color: #555 !important;
+            }
+
+            .summary {
+                gap: .4rem;
+                margin-bottom: .8rem;
+            }
+
+            .sc {
+                background: #f4f6fa !important;
+                border: 1px solid #ccc !important;
+                padding: .5rem .7rem;
+            }
+
+            .sc .label {
+                color: #555 !important;
+            }
+
+            .val-green {
+                color: #1a7f37 !important;
+            }
+
+            .val-blue {
+                color: #0050b3 !important;
+            }
+
+            .val-yellow {
+                color: #7a5000 !important;
+            }
+
+            .val-purple {
+                color: #4a007a !important;
+            }
+
+            .table-wrap {
+                overflow: visible !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                border: 1px solid #bbb !important;
+            }
+
+            table {
+                min-width: unset !important;
+                width: 100% !important;
+                table-layout: fixed;
+                font-size: 7.5pt;
+            }
+
+            thead th {
+                background: #e4e9f0 !important;
+                color: #333 !important;
+                font-size: 6.5pt !important;
+                padding: 4px 5px !important;
+                position: static !important;
+                white-space: normal !important;
+                border: 1px solid #bbb !important;
+            }
+
+            td {
+                padding: 4px 5px !important;
+                color: #000 !important;
+                word-break: break-word;
+                border: 1px solid #ddd !important;
+            }
+
+            .gr td {
+                background: #dceeff !important;
+                color: #003366 !important;
+                border: 1px solid #aac4e4 !important;
+            }
+
+            .tech {
+                border-radius: 3px !important;
+            }
+
+            .t-abap {
+                background: #fde8d0 !important;
+                color: #8a3800 !important;
+            }
+
+            .t-odata {
+                background: #d0e8ff !important;
+                color: #003080 !important;
+            }
+
+            .t-cap {
+                background: #e8d4ff !important;
+                color: #4a007a !important;
+            }
+
+            .t-fiori {
+                background: #d4f0dc !important;
+                color: #1a5c2a !important;
+            }
+
+            .t-mixed {
+                background: #fef3cd !important;
+                color: #7a5000 !important;
+            }
+
+            .time-before {
+                color: #b35a00 !important;
+            }
+
+            .time-after {
+                color: #1a7f37 !important;
+            }
+
+            .pbar {
+                display: none;
+            }
+
+            .pbar-val {
+                font-size: 8pt !important;
+            }
+
+            .pbar-wrap {
+                gap: 0;
+            }
+
+            tbody tr:hover {
+                background: transparent !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="balatro-bg"></div>
+
+    <header class="header">
+        <div class="eyebrow">Medición de Impacto · Herramienta IA en SAP</div>
+        <h1>⚡ Desarrollo SAP — Antes vs Después de IA</h1>
+        <p>Comparativa de tiempos reales en ABAP, OData, CAP y Fiori con y sin asistencia de IA</p>
+    </header>
+
+    <!-- SUMMARY -->
+    <div class="summary">
+        <div class="sc">
+            <div class="label">Tareas medidas</div>
+            <div class="value val-blue" id="sc-tasks">—</div>
+            <div class="sub">Casos comparados</div>
+        </div>
+        <div class="sc">
+            <div class="label">Tiempo total SIN IA</div>
+            <div class="value val-yellow" id="sc-before">—</div>
+            <div class="sub">Horas acumuladas</div>
+        </div>
+        <div class="sc">
+            <div class="label">Tiempo total CON IA</div>
+            <div class="value val-green" id="sc-after">—</div>
+            <div class="sub">Horas acumuladas</div>
+        </div>
+        <div class="sc">
+            <div class="label">Ahorro total</div>
+            <div class="value val-green" id="sc-saved">—</div>
+            <div class="sub">Horas recuperadas</div>
+        </div>
+        <div class="sc">
+            <div class="label">Mejora promedio</div>
+            <div class="value val-purple" id="sc-avg">—</div>
+            <div class="sub">Reducción de tiempo</div>
+        </div>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+        <div class="leg-item"><span class="leg-dot" style="background:var(--t-abap)"></span>ABAP</div>
+        <div class="leg-item"><span class="leg-dot" style="background:var(--t-odata)"></span>OData</div>
+        <div class="leg-item"><span class="leg-dot" style="background:var(--t-cap)"></span>CAP</div>
+        <div class="leg-item"><span class="leg-dot" style="background:var(--t-fiori)"></span>Fiori</div>
+        <div class="leg-item"><span class="leg-dot" style="background:var(--t-mixed)"></span>Multi-stack</div>
+        <div class="leg-item" style="font-style:italic; font-size:.68rem;">· Clic en el badge de tecnología para
+            cambiarla</div>
+    </div>
+
+    <!-- ACTIONS BAR -->
+    <div class="actions">
+        <div class="edit-hint">✏️ Clic en cualquier celda para editar &nbsp;·&nbsp; Los totales se recalculan
+            automáticamente</div>
+        <div class="btn-group">
+            <button class="btn btn-success" onclick="addGroup()">＋ Agregar sección</button>
+            <button class="btn" onclick="exportPDF()">📄 Exportar PDF</button>
+            <button class="btn btn-primary" onclick="exportCSV()">⬇️ Descargar CSV</button>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+        <table id="mainTable">
+            <thead>
+                <tr>
+                    <th class="num">#</th>
+                    <th>Tarea de Desarrollo</th>
+                    <th>Tecnología</th>
+                    <th>Descripción / Alcance</th>
+                    <th>Tiempo SIN IA</th>
+                    <th>Tiempo CON IA</th>
+                    <th>Ahorro</th>
+                    <th>Mejora %</th>
+                    <th>Observaciones</th>
+                    <th class="th-act">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+
+                <!-- ══ ABAP ══ -->
+                <tr class="gr" data-group="1">
+                    <td colspan="10">
+                        <span class="gr-name" contenteditable="true">📦 ABAP — Reportes &amp; Lógica de Negocio</span>
+                        <span class="gr-actions">
+                            <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
+                            <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
+                        </span>
+                    </td>
+                </tr>
+                <tr data-group="1">
+                    <td class="num" contenteditable="true">1</td>
+                    <td contenteditable="true">Reporte ALV clásico (SELECT + LOOP)</td>
+                    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)"
+                            title="Clic para cambiar">ABAP</span></td>
+                    <td contenteditable="true">Reporte de ventas con filtros, totales y layout ALV</td>
+                    <td class="time-before" contenteditable="true">6 h</td>
+                    <td class="time-after" contenteditable="true">2 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó estructura base + SELECTs optimizados</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="1">
+                    <td class="num" contenteditable="true">2</td>
+                    <td contenteditable="true">Enhancement de función estándar (BAdI / User-exit)</td>
+                    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)"
+                            title="Clic para cambiar">ABAP</span></td>
+                    <td contenteditable="true">Localizar enhancement spot + implementar lógica custom</td>
+                    <td class="time-before" contenteditable="true">5 h</td>
+                    <td class="time-after" contenteditable="true">1.5 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA identificó el exit correcto y generó el código</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="1">
+                    <td class="num" contenteditable="true">3</td>
+                    <td contenteditable="true">BAPI Wrapper / Function Module custom</td>
+                    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)"
+                            title="Clic para cambiar">ABAP</span></td>
+                    <td contenteditable="true">Wrapper sobre BAPI estándar con validaciones</td>
+                    <td class="time-before" contenteditable="true">4 h</td>
+                    <td class="time-after" contenteditable="true">1 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó interface + manejo de RETURN completo</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="1">
+                    <td class="num" contenteditable="true">4</td>
+                    <td contenteditable="true">Debugging y corrección de performance</td>
+                    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)"
+                            title="Clic para cambiar">ABAP</span></td>
+                    <td contenteditable="true">Identificar SELECTs ineficientes + refactorizar</td>
+                    <td class="time-before" contenteditable="true">8 h</td>
+                    <td class="time-after" contenteditable="true">2 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA analizó trace y propuso refactorización</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="1">
+                    <td class="num" contenteditable="true">5</td>
+                    <td contenteditable="true">Smartform / Adobe Form</td>
+                    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)"
+                            title="Clic para cambiar">ABAP</span></td>
+                    <td contenteditable="true">Formulario de impresión con logo y tabla de posiciones</td>
+                    <td class="time-before" contenteditable="true">10 h</td>
+                    <td class="time-after" contenteditable="true">4 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó driver program y estructura de nodos</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+
+                <!-- ══ ODATA ══ -->
+                <tr class="gr" data-group="2">
+                    <td colspan="10">
+                        <span class="gr-name" contenteditable="true">🌐 OData — Servicios REST para SAP</span>
+                        <span class="gr-actions">
+                            <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
+                            <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
+                        </span>
+                    </td>
+                </tr>
+                <tr data-group="2">
+                    <td class="num" contenteditable="true">6</td>
+                    <td contenteditable="true">Servicio OData SEGW (GET_ENTITYSET)</td>
+                    <td class="td-tech"><span class="tech t-odata" onclick="cycleTech(this)"
+                            title="Clic para cambiar">OData</span></td>
+                    <td contenteditable="true">Entity set con filtros y paginación desde tabla custom</td>
+                    <td class="time-before" contenteditable="true">8 h</td>
+                    <td class="time-after" contenteditable="true">2.5 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó clase MPC, DPC y método completo</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="2">
+                    <td class="num" contenteditable="true">7</td>
+                    <td contenteditable="true">OData CREATE / UPDATE / DELETE</td>
+                    <td class="td-tech"><span class="tech t-odata" onclick="cycleTech(this)"
+                            title="Clic para cambiar">OData</span></td>
+                    <td contenteditable="true">CRUD completo sobre entidad con validaciones</td>
+                    <td class="time-before" contenteditable="true">10 h</td>
+                    <td class="time-after" contenteditable="true">3 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó los 3 métodos con manejo de errores</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="2">
+                    <td class="num" contenteditable="true">8</td>
+                    <td contenteditable="true">CDS View + OData automático (anotaciones)</td>
+                    <td class="td-tech"><span class="tech t-odata" onclick="cycleTech(this)"
+                            title="Clic para cambiar">OData</span></td>
+                    <td contenteditable="true">Vista CDS con @OData.publish y filtros por anotaciones</td>
+                    <td class="time-before" contenteditable="true">6 h</td>
+                    <td class="time-after" contenteditable="true">1.5 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó CDS + anotaciones @Search @Filter</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+
+                <!-- ══ CAP ══ -->
+                <tr class="gr" data-group="3">
+                    <td colspan="10">
+                        <span class="gr-name" contenteditable="true">☁️ CAP — Cloud Application Programming Model</span>
+                        <span class="gr-actions">
+                            <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
+                            <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
+                        </span>
+                    </td>
+                </tr>
+                <tr data-group="3">
+                    <td class="num" contenteditable="true">9</td>
+                    <td contenteditable="true">Modelo CDS + Service CAP básico</td>
+                    <td class="td-tech"><span class="tech t-cap" onclick="cycleTech(this)"
+                            title="Clic para cambiar">CAP</span></td>
+                    <td contenteditable="true">Entidades, asociaciones y servicio expuesto via OData</td>
+                    <td class="time-before" contenteditable="true">8 h</td>
+                    <td class="time-after" contenteditable="true">2 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó schema.cds + srv completo + handlers</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="3">
+                    <td class="num" contenteditable="true">10</td>
+                    <td contenteditable="true">CAP con handlers custom (JavaScript)</td>
+                    <td class="td-tech"><span class="tech t-cap" onclick="cycleTech(this)"
+                            title="Clic para cambiar">CAP</span></td>
+                    <td contenteditable="true">Lógica before/after, validaciones y cálculos derivados</td>
+                    <td class="time-before" contenteditable="true">10 h</td>
+                    <td class="time-after" contenteditable="true">3 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó handlers con async/await y mensajes</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="3">
+                    <td class="num" contenteditable="true">11</td>
+                    <td contenteditable="true">CAP + integración S/4 HANA (Remote Service)</td>
+                    <td class="td-tech"><span class="tech t-cap" onclick="cycleTech(this)"
+                            title="Clic para cambiar">CAP</span></td>
+                    <td contenteditable="true">Consumo de API estándar SAP desde CAP con destinations</td>
+                    <td class="time-before" contenteditable="true">14 h</td>
+                    <td class="time-after" contenteditable="true">5 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó external service + config destination</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+
+                <!-- ══ FIORI ══ -->
+                <tr class="gr" data-group="4">
+                    <td colspan="10">
+                        <span class="gr-name" contenteditable="true">🖥️ Fiori — Apps &amp; UI5</span>
+                        <span class="gr-actions">
+                            <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
+                            <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
+                        </span>
+                    </td>
+                </tr>
+                <tr data-group="4">
+                    <td class="num" contenteditable="true">12</td>
+                    <td contenteditable="true">Fiori Elements – List Report</td>
+                    <td class="td-tech"><span class="tech t-fiori" onclick="cycleTech(this)"
+                            title="Clic para cambiar">Fiori</span></td>
+                    <td contenteditable="true">App ListReport con filtros, columnas y navegación</td>
+                    <td class="time-before" contenteditable="true">8 h</td>
+                    <td class="time-after" contenteditable="true">2 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó @UI.lineItem + @SelectionField</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="4">
+                    <td class="num" contenteditable="true">13</td>
+                    <td contenteditable="true">Fiori Elements – Object Page</td>
+                    <td class="td-tech"><span class="tech t-fiori" onclick="cycleTech(this)"
+                            title="Clic para cambiar">Fiori</span></td>
+                    <td contenteditable="true">Detalle con secciones, subsecciones y tabs</td>
+                    <td class="time-before" contenteditable="true">10 h</td>
+                    <td class="time-after" contenteditable="true">3 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó @UI.facets + FieldGroup completos</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="4">
+                    <td class="num" contenteditable="true">14</td>
+                    <td contenteditable="true">SAPUI5 Custom App (freestyle)</td>
+                    <td class="td-tech"><span class="tech t-fiori" onclick="cycleTech(this)"
+                            title="Clic para cambiar">Fiori</span></td>
+                    <td contenteditable="true">App custom con OData binding, routing y fragmentos</td>
+                    <td class="time-before" contenteditable="true">20 h</td>
+                    <td class="time-after" contenteditable="true">8 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó controller, views XML y bindings</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+
+                <!-- ══ MULTI-STACK ══ -->
+                <tr class="gr" data-group="5">
+                    <td colspan="10">
+                        <span class="gr-name" contenteditable="true">🔗 Multi-stack — Soluciones Integradas</span>
+                        <span class="gr-actions">
+                            <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
+                            <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
+                        </span>
+                    </td>
+                </tr>
+                <tr data-group="5">
+                    <td class="num" contenteditable="true">15</td>
+                    <td contenteditable="true">CDS + OData + Fiori ListReport end-to-end</td>
+                    <td class="td-tech"><span class="tech t-mixed" onclick="cycleTech(this)"
+                            title="Clic para cambiar">Multi</span></td>
+                    <td contenteditable="true">Stack completo: CDS → servicio → app Fiori Elements</td>
+                    <td class="time-before" contenteditable="true">20 h</td>
+                    <td class="time-after" contenteditable="true">6 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA generó todo el stack con consistencia</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+                <tr data-group="5">
+                    <td class="num" contenteditable="true">16</td>
+                    <td contenteditable="true">ABAP + OData + Fiori (modernización ALV)</td>
+                    <td class="td-tech"><span class="tech t-mixed" onclick="cycleTech(this)"
+                            title="Clic para cambiar">Multi</span></td>
+                    <td contenteditable="true">Migrar ALV a Fiori Elements manteniendo lógica ABAP</td>
+                    <td class="time-before" contenteditable="true">25 h</td>
+                    <td class="time-after" contenteditable="true">9 h</td>
+                    <td class="td-saved"></td>
+                    <td class="td-pct"></td>
+                    <td contenteditable="true">IA guió migración y generó anotaciones</td>
+                    <td class="td-act"><button class="row-del" onclick="deleteRow(this)"
+                            title="Eliminar fila">🗑</button></td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <!-- ADD ROW BAR (bottom of table) -->
+        <div class="add-row-bar">
+            <span>Agregar fila en:</span>
+            <!-- dynamically filled by JS -->
+            <div id="addRowButtons" style="display:flex;gap:.6rem;flex-wrap:wrap;"></div>
+        </div>
+    </div><!-- end table-wrap -->
+
+    <script>
+        /* ════════════════════════════════════════
+           TECH BADGE CYCLE
+        ════════════════════════════════════════ */
+        const TECHS = [
+            { cls: 't-abap', label: 'ABAP' },
+            { cls: 't-odata', label: 'OData' },
+            { cls: 't-cap', label: 'CAP' },
+            { cls: 't-fiori', label: 'Fiori' },
+            { cls: 't-mixed', label: 'Multi' }
+        ];
+
+        function cycleTech(el) {
+            const cur = TECHS.findIndex(t => el.classList.contains(t.cls));
+            const next = (cur + 1) % TECHS.length;
+            TECHS.forEach(t => el.classList.remove(t.cls));
+            el.classList.add(TECHS[next].cls);
+            el.textContent = TECHS[next].label;
+        }
+
+        /* ════════════════════════════════════════
+           RECALCULATE
+        ════════════════════════════════════════ */
+        function parseH(text) {
+            const t = (text || '').trim().toLowerCase();
+            const min = t.match(/(\d+(?:[.,]\d+)?)\s*min/);
+            if (min) return parseFloat(min[1].replace(',', '.')) / 60;
+            const h = t.match(/(\d+(?:[.,]\d+)?)/);
+            return h ? parseFloat(h[1].replace(',', '.')) : NaN;
+        }
+
+        function fmt(h) {
+            if (isNaN(h) || h < 0) return '—';
+            if (h < 1) return Math.round(h * 60) + ' min';
+            const int = Math.floor(h), dec = h - int;
+            return int + (dec > 0.05 ? '.' + Math.round(dec * 10) : '') + ' h';
+        }
+
+        function recalc() {
+            const rows = document.querySelectorAll('#mainTable tbody tr:not(.gr)');
+            let totB = 0, totA = 0, pcts = [], count = 0;
+
+            rows.forEach(tr => {
+                const bEl = tr.querySelector('.time-before');
+                const aEl = tr.querySelector('.time-after');
+                const sEl = tr.querySelector('.td-saved');
+                const pEl = tr.querySelector('.td-pct');
+                if (!bEl || !aEl || !sEl || !pEl) return;
+
+                const b = parseH(bEl.innerText);
+                const a = parseH(aEl.innerText);
+
+                if (!isNaN(b) && !isNaN(a) && b > 0) {
+                    const saved = b - a;
+                    const pct = Math.round((saved / b) * 100);
+                    sEl.innerText = fmt(saved >= 0 ? saved : 0);
+                    sEl.style.color = saved > 0 ? 'var(--green)' : 'var(--red)';
+                    const tier = pct >= 70 ? 'tier-xhigh' : pct >= 50 ? 'tier-high' : pct >= 30 ? 'tier-mid' : 'tier-low';
+                    pEl.innerHTML = `<div class="pbar-wrap ${tier}"><div class="pbar"><div class="pbar-fill" style="width:${Math.max(0, Math.min(100, pct))}%"></div></div><span class="pbar-val">${pct}%</span></div>`;
+                    totB += b; totA += a; pcts.push(pct); count++;
+                }
+            });
+
+            document.getElementById('sc-tasks').innerText = count;
+            document.getElementById('sc-before').innerText = fmt(totB);
+            document.getElementById('sc-after').innerText = fmt(totA);
+            document.getElementById('sc-saved').innerText = fmt(totB - totA);
+            const avg = pcts.length ? Math.round(pcts.reduce((s, v) => s + v, 0) / pcts.length) : 0;
+            document.getElementById('sc-avg').innerText = avg + '%';
+
+            // Rebuild add-row buttons
+            refreshAddRowButtons();
+        }
+
+        /* ════════════════════════════════════════
+           ADD / DELETE ROW
+        ════════════════════════════════════════ */
+        let groupCounter = 6; // next group id
+
+        function makeDataRow(groupId) {
+            const tr = document.createElement('tr');
+            tr.dataset.group = groupId;
+            tr.innerHTML = `
+    <td class="num" contenteditable="true">—</td>
+    <td contenteditable="true">Nueva tarea</td>
+    <td class="td-tech"><span class="tech t-abap" onclick="cycleTech(this)" title="Clic para cambiar">ABAP</span></td>
+    <td contenteditable="true">Descripción de la tarea</td>
+    <td class="time-before" contenteditable="true">— h</td>
+    <td class="time-after"  contenteditable="true">— h</td>
+    <td class="td-saved"></td>
+    <td class="td-pct"></td>
+    <td contenteditable="true">—</td>
+    <td class="td-act"><button class="row-del" onclick="deleteRow(this)" title="Eliminar fila">🗑</button></td>`;
+
+            // Listen for time changes
+            tr.querySelectorAll('.time-before, .time-after').forEach(td => {
+                td.addEventListener('input', recalc);
+                td.addEventListener('blur', recalc);
+            });
+            return tr;
+        }
+
+        function addRowToGroup(btn) {
+            const grRow = btn.closest('tr.gr');
+            const gid = grRow.dataset.group;
+            const tbody = document.getElementById('tableBody');
+            const allRows = [...tbody.querySelectorAll('tr')];
+            const grIdx = allRows.indexOf(grRow);
+
+            // Find last row of this group
+            let insertAfter = grRow;
+            for (let i = grIdx + 1; i < allRows.length; i++) {
+                if (allRows[i].classList.contains('gr')) break;
+                insertAfter = allRows[i];
+            }
+
+            const newRow = makeDataRow(gid);
+            insertAfter.after(newRow);
+            // Focus the task name cell
+            newRow.querySelector('td:nth-child(2)').focus();
+            recalc();
+        }
+
+        function deleteRow(btn) {
+            const tr = btn.closest('tr');
+            tr.style.transition = 'opacity .2s';
+            tr.style.opacity = '0';
+            setTimeout(() => { tr.remove(); recalc(); }, 200);
+        }
+
+        function deleteGroup(btn) {
+            const grRow = btn.closest('tr.gr');
+            const gid = grRow.dataset.group;
+            const tbody = document.getElementById('tableBody');
+            const toDelete = [...tbody.querySelectorAll(`tr[data-group="${gid}"]`)];
+            toDelete.forEach(tr => {
+                tr.style.transition = 'opacity .2s';
+                tr.style.opacity = '0';
+            });
+            setTimeout(() => { toDelete.forEach(tr => tr.remove()); recalc(); }, 200);
+        }
+
+        function addGroup() {
+            const name = prompt('Nombre de la nueva sección:', '🆕 Nueva Sección');
+            if (!name) return;
+            const gid = groupCounter++;
+            const tbody = document.getElementById('tableBody');
+
+            // Group header
+            const grRow = document.createElement('tr');
+            grRow.className = 'gr';
+            grRow.dataset.group = gid;
+            grRow.innerHTML = `
+    <td colspan="10">
+      <span class="gr-name" contenteditable="true">${name}</span>
+      <span class="gr-actions">
+        <button class="gr-btn" onclick="addRowToGroup(this)">＋ Fila</button>
+        <button class="gr-btn del-gr" onclick="deleteGroup(this)">✕ Sección</button>
+      </span>
+    </td>`;
+            tbody.appendChild(grRow);
+
+            // First data row
+            const dataRow = makeDataRow(gid);
+            tbody.appendChild(dataRow);
+            dataRow.querySelector('td:nth-child(2)').focus();
+            recalc();
+        }
+
+        /* ════════════════════════════════════════
+           ADD-ROW BUTTONS BAR (bottom)
+        ════════════════════════════════════════ */
+        function refreshAddRowButtons() {
+            const container = document.getElementById('addRowButtons');
+            container.innerHTML = '';
+
+            const groups = document.querySelectorAll('#tableBody tr.gr');
+            groups.forEach(gr => {
+                const nameEl = gr.querySelector('.gr-name');
+                const label = (nameEl ? nameEl.innerText : 'Sección').replace(/^[^\w]+/, '').slice(0, 30);
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-success';
+                btn.style.fontSize = '.72rem';
+                btn.style.padding = '.3rem .7rem';
+                btn.textContent = '＋ ' + label;
+                btn.onclick = () => addRowToGroup(gr.querySelector('.gr-btn'));
+                container.appendChild(btn);
+            });
+        }
+
+        /* ════════════════════════════════════════
+           LISTEN ON TIME CELLS (initial rows)
+        ════════════════════════════════════════ */
+        document.querySelectorAll('.time-before, .time-after').forEach(td => {
+            td.addEventListener('input', recalc);
+            td.addEventListener('blur', recalc);
+        });
+
+        recalc();
+
+        /* ════════════════════════════════════════
+           EXPORT PDF
+        ════════════════════════════════════════ */
+        function exportPDF() {
+            const prev = document.title;
+            document.title = 'Impacto_IA_SAP_Antes_vs_Despues';
+            window.print();
+            setTimeout(() => { document.title = prev; }, 2000);
+        }
+
+        /* ════════════════════════════════════════
+           EXPORT CSV
+        ════════════════════════════════════════ */
+        function exportCSV() {
+            const tbl = document.getElementById('mainTable');
+
+            // Headers — skip "Acciones" column, prepend "Sección"
+            const headers = [
+                'Sección',
+                ...[...tbl.querySelectorAll('thead th')]
+                    .filter(th => !th.classList.contains('th-act'))
+                    .map(th => th.innerText.trim())
+            ];
+
+            const dataRows = [];
+
+            tbl.querySelectorAll('tbody tr:not(.gr)').forEach(tr => {
+                // Walk backwards to find the group header name
+                let section = '';
+                let prev = tr.previousElementSibling;
+                while (prev) {
+                    if (prev.classList.contains('gr')) {
+                        const nameEl = prev.querySelector('.gr-name');
+                        section = nameEl ? nameEl.innerText.trim() : '';
+                        break;
+                    }
+                    prev = prev.previousElementSibling;
+                }
+
+                const cells = [
+                    section,
+                    ...[...tr.querySelectorAll('td')]
+                        .filter(td => !td.classList.contains('td-act'))
+                        .map(td => td.innerText.trim())
+                ];
+                dataRows.push(cells);
+            });
+
+            const esc = v => `"${String(v).replace(/"/g, '""')}"`;
+            const csv = [headers, ...dataRows].map(r => r.map(esc).join(',')).join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            // Append to DOM before click — required for Chrome/Edge on Windows
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Impacto_IA_SAP.csv';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 500);
+        }
+    </script>
+    <script type="module">
+        import { Renderer, Program, Mesh, Triangle } from 'https://cdn.skypack.dev/ogl';
+
+        function hexToVec4(hex) {
+            let hexStr = hex.replace('#', '');
+            let r = 0, g = 0, b = 0, a = 1;
+            if (hexStr.length === 6) {
+                r = parseInt(hexStr.slice(0, 2), 16) / 255;
+                g = parseInt(hexStr.slice(2, 4), 16) / 255;
+                b = parseInt(hexStr.slice(4, 6), 16) / 255;
+            } else if (hexStr.length === 8) {
+                r = parseInt(hexStr.slice(0, 2), 16) / 255;
+                g = parseInt(hexStr.slice(2, 4), 16) / 255;
+                b = parseInt(hexStr.slice(4, 6), 16) / 255;
+                a = parseInt(hexStr.slice(6, 8), 16) / 255;
+            }
+            return [r, g, b, a];
+        }
+
+        const vertexShader = `
+            attribute vec2 uv;
+            attribute vec2 position;
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 0, 1);
+            }
+        `;
+
+        const fragmentShader = `
+            precision highp float;
+            #define PI 3.14159265359
+
+            uniform float iTime;
+            uniform vec3 iResolution;
+            uniform float uSpinRotation;
+            uniform float uSpinSpeed;
+            uniform vec2 uOffset;
+            uniform vec4 uColor1;
+            uniform vec4 uColor2;
+            uniform vec4 uColor3;
+            uniform float uContrast;
+            uniform float uLighting;
+            uniform float uSpinAmount;
+            uniform float uPixelFilter;
+            uniform float uSpinEase;
+            uniform bool uIsRotate;
+            uniform vec2 uMouse;
+
+            varying vec2 vUv;
+
+            vec4 effect(vec2 screenSize, vec2 screen_coords) {
+                float pixel_size = length(screenSize.xy) / uPixelFilter;
+                vec2 uv = (floor(screen_coords.xy * (1.0 / pixel_size)) * pixel_size - 0.5 * screenSize.xy) / length(screenSize.xy) - uOffset;
+                float uv_len = length(uv);
+                
+                float speed = (uSpinRotation * uSpinEase * 0.2);
+                if(uIsRotate){
+                   speed = iTime * speed;
+                }
+                speed += 302.2;
+                
+                float mouseInfluence = (uMouse.x * 2.0 - 1.0);
+                speed += mouseInfluence * 0.1;
+                
+                float new_pixel_angle = atan(uv.y, uv.x) + speed - uSpinEase * 20.0 * (uSpinAmount * uv_len + (1.0 - uSpinAmount));
+                vec2 mid = (screenSize.xy / length(screenSize.xy)) / 2.0;
+                uv = (vec2(uv_len * cos(new_pixel_angle) + mid.x, uv_len * sin(new_pixel_angle) + mid.y) - mid);
+                
+                uv *= 30.0;
+                float baseSpeed = iTime * uSpinSpeed;
+                speed = baseSpeed + mouseInfluence * 2.0;
+                
+                vec2 uv2 = vec2(uv.x + uv.y);
+                
+                for(int i = 0; i < 5; i++) {
+                    uv2 += sin(max(uv.x, uv.y)) + uv;
+                    uv += 0.5 * vec2(
+                        cos(5.1123314 + 0.353 * uv2.y + speed * 0.131121),
+                        sin(uv2.x - 0.113 * speed)
+                    );
+                    uv -= cos(uv.x + uv.y) - sin(uv.x * 0.711 - uv.y);
+                }
+                
+                float contrast_mod = (0.25 * uContrast + 0.5 * uSpinAmount + 1.2);
+                float paint_res = min(2.0, max(0.0, length(uv) * 0.035 * contrast_mod));
+                float c1p = max(0.0, 1.0 - contrast_mod * abs(1.0 - paint_res));
+                float c2p = max(0.0, 1.0 - contrast_mod * abs(paint_res));
+                float c3p = 1.0 - min(1.0, c1p + c2p);
+                float light = (uLighting - 0.2) * max(c1p * 5.0 - 4.0, 0.0) + uLighting * max(c2p * 5.0 - 4.0, 0.0);
+                
+                return (0.3 / uContrast) * uColor1 + (1.0 - 0.3 / uContrast) * (uColor1 * c1p + uColor2 * c2p + vec4(c3p * uColor3.rgb, c3p * uColor1.a)) + light;
+            }
+
+            void main() {
+                vec2 uv = vUv * iResolution.xy;
+                gl_FragColor = effect(iResolution.xy, uv);
+            }
+        `;
+
+        function initBalatro() {
+            const container = document.getElementById('balatro-bg');
+            if (!container) return;
+
+            const renderer = new Renderer({ alpha: true });
+            const gl = renderer.gl;
+            container.appendChild(gl.canvas);
+
+            const options = {
+                spinRotation: -2.0,
+                spinSpeed: 7.0,
+                offset: [0.0, 0.0],
+                color1: '#DE443B',
+                color2: '#006BB4',
+                color3: '#162325',
+                contrast: 3.5,
+                lighting: 0.4,
+                spinAmount: 0.25,
+                pixelFilter: 745.0,
+                spinEase: 1.0,
+                isRotate: false,
+                mouseInteraction: true
+            };
+
+            let program;
+
+            function resize() {
+                renderer.setSize(container.offsetWidth, container.offsetHeight);
+                if (program) {
+                    program.uniforms.iResolution.value = [gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height];
+                }
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            const geometry = new Triangle(gl);
+            program = new Program(gl, {
+                vertex: vertexShader,
+                fragment: fragmentShader,
+                uniforms: {
+                    iTime: { value: 0 },
+                    iResolution: {
+                        value: [gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height]
+                    },
+                    uSpinRotation: { value: options.spinRotation },
+                    uSpinSpeed: { value: options.spinSpeed },
+                    uOffset: { value: options.offset },
+                    uColor1: { value: hexToVec4(options.color1) },
+                    uColor2: { value: hexToVec4(options.color2) },
+                    uColor3: { value: hexToVec4(options.color3) },
+                    uContrast: { value: options.contrast },
+                    uLighting: { value: options.lighting },
+                    uSpinAmount: { value: options.spinAmount },
+                    uPixelFilter: { value: options.pixelFilter },
+                    uSpinEase: { value: options.spinEase },
+                    uIsRotate: { value: options.isRotate },
+                    uMouse: { value: [0.5, 0.5] }
+                }
+            });
+
+            const mesh = new Mesh(gl, { geometry, program });
+            let animationFrameId;
+
+            function update(time) {
+                animationFrameId = requestAnimationFrame(update);
+                program.uniforms.iTime.value = time * 0.001;
+                renderer.render({ scene: mesh });
+            }
+            animationFrameId = requestAnimationFrame(update);
+
+            window.addEventListener('mousemove', (e) => {
+                if (!options.mouseInteraction) return;
+                const x = e.clientX / window.innerWidth;
+                const y = 1.0 - (e.clientY / window.innerHeight);
+                program.uniforms.uMouse.value = [x, y];
+            });
+        }
+
+        if (document.readyState === 'complete') {
+            initBalatro();
+        } else {
+            window.addEventListener('load', initBalatro);
+        }
+    </script>
+</body>
+
+</html>
